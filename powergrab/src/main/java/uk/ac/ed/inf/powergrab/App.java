@@ -8,6 +8,8 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        Position pos = new Position(55.946233, -3.192473);
+        System.out.println(pos.nextPosition(Direction.N).latitude);
+        System.out.println(pos.nextPosition(Direction.N).inPlayArea());
     }
 }
