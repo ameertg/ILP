@@ -13,7 +13,7 @@ public class Position {
 		double newlat;
 		double newlong;
 		
-		double angle = Math.toDegrees(getAngle(direction));
+		double angle = Math.toRadians(getAngle(direction));
 		final double r = 0.0003;
 		
 		newlat = r * Math.cos(angle) + this.latitude;
@@ -23,10 +23,10 @@ public class Position {
 	}
 	
 	public boolean inPlayArea() {
-		if ((this.latitude >= 55.942617) 
-			&& (this.latitude <= 55.946233) 
-			&& (this.longitude >= -3.192473)
-			&& (this.longitude <= -3.184319)) {
+		if ((this.latitude > 55.942617) 
+			&& (this.latitude < 55.946233) 
+			&& (this.longitude > -3.192473)
+			&& (this.longitude < -3.184319)) {
 			return true;
 		}
 		else return false;
