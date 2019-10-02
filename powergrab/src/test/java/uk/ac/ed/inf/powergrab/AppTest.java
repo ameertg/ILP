@@ -213,4 +213,14 @@ public class AppTest extends TestCase {
 		assertTrue(approxEq(p5, stop));
 	}
 	
+	public void testMapReader() {
+		try {
+		Map map = new Map("http://homepages.inf.ed.ac.uk/stg/powergrab/2019/09/15/powergrabmap.geojson");
+		System.out.print(map.mapSource);
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
 }

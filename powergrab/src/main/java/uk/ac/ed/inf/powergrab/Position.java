@@ -16,6 +16,8 @@ public class Position {
 		double angle = Math.toRadians(getAngle(direction));
 		final double r = 0.0003;
 		
+		// Calculate the vertical/horizontal change and 
+		// add this to the previous coordinates
 		newlat = r * Math.cos(angle) + this.latitude;
 		newlong = r * Math.sin(angle) + this.longitude;
 		
@@ -23,6 +25,7 @@ public class Position {
 	}
 	
 	public boolean inPlayArea() {
+		// Check to see whether or not drone is within play area square
 		if ((this.latitude > 55.942617) 
 			&& (this.latitude < 55.946233) 
 			&& (this.longitude > -3.192473)
@@ -32,6 +35,7 @@ public class Position {
 		else return false;
 	}
 	
+	// Function to convert direction to angle in degrees
 	private double getAngle(Direction direction) {
 		switch (direction) {
 			case N: return 0;

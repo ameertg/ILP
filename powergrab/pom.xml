@@ -15,6 +15,13 @@
   </properties>
 
   <dependencies>
+  
+  <dependency>
+    <groupId>com.mapbox.mapboxsdk</groupId>
+    <!-- Replace `DESIRED_JAVA_SDK_PACKAGE` with the name of one of the packages listed in the next section-->
+    <artifactId>mapbox-sdk-geojson</artifactId>
+    <version>4.9.0</version>
+</dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
