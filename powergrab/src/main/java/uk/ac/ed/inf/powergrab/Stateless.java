@@ -17,7 +17,7 @@ public class Stateless {
 		rng = new Random(seed);
 	}
 	
-	public void move(Map map) {
+	public Direction moveChoice(Map map) {
 		ArrayList<Feature> landings;
 		float sum = 0;
 		Direction next = null;
@@ -40,6 +40,7 @@ public class Stateless {
 			// Randomly choose direction
 			next = Direction.values()[rng.nextInt(15)];
 		}
-			
+		
+		return next;	
 	}
 }
