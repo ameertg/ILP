@@ -1,5 +1,9 @@
 package uk.ac.ed.inf.powergrab;
 
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -213,14 +217,17 @@ public class AppTest extends TestCase {
 		assertTrue(approxEq(p5, stop));
 	}
 	
-	public void testMapReader() {
-		try {
+	
+	public void testDroneMove() throws Exception{
 		Map map = new Map("http://homepages.inf.ed.ac.uk/stg/powergrab/2019/09/15/powergrabmap.geojson");
-		System.out.print(map.mapSource);
+		Stateless drone = new Stateless(p0, 100);
+		int count = 0;
+		while(drone.power > 0 && count <= 250) {
+			drone.makeMove(map);
 		}
-		catch (Exception e) {
-			
-		}
+		map.features.add(Feature.fromGeometry(LineString.fromLngLats(map.path)));
+		System.out.print(FeatureCollection.fromFeatures(map.features).toJson());
+		
 	}
 	
 }

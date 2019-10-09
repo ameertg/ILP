@@ -17,30 +17,42 @@ public class Stateless {
 		rng = new Random(seed);
 	}
 	
-	public Direction moveChoice(Map map) {
+	public void makeMove(Map map) {
 		ArrayList<Feature> landings;
+		LinkedList<Direction> notBad = new LinkedList<Direction>(Arrays.asList(Direction.values())); // List of all the directions
+		
 		float sum = 0;
 		Direction next = null;
 		Position newPos;
 		//Iterate over every direction to get the best move
 		for (Direction d : Direction.values()) {
 			newPos = location.nextPosition(d);
+			if (!newPos.inPlayArea()) {
+				notBad.remove(d);
+				continue;
+			}
 			landings = map.nearbyFeatures(newPos, lookahead);
 			float tempSum = 0;
 			for (Feature l : landings) {
 				tempSum = l.getProperty("coins").getAsFloat() + l.getProperty("power").getAsFloat();
 			}
-			if (tempSum >= sum) {
+			if (tempSum > sum) {
 				next = d;
+			}
+			else if (tempSum < 0) {
+				notBad.remove(d);
 			}
 		}
 		
-		if (next == null) {
-			//==== Ignore bad directions ====
-			// Randomly choose direction
-			next = Direction.values()[rng.nextInt(15)];
+		// If no positive directions are found take a random non-negative direction
+		if (next == null && notBad.size() > 0) {
+			next = notBad.get(rng.nextInt(notBad.size()));
 		}
 		
-		return next;	
+		// Update position and map
+		location = location.nextPosition(next);
+		double[] values = map.update(this);	
+		this.coins = values[0];
+		this.power = values[1] - 1.25;
 	}
 }

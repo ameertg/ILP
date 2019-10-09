@@ -8,6 +8,7 @@ import com.mapbox.geojson.*;
 
 public class Map {
 	List<Feature> features;
+	LinkedList<Point> path = new LinkedList<Point>();
 	String mapSource;
 	
 	//Gets a map from url
@@ -65,5 +66,40 @@ public class Map {
 	
 	public double distance(Position a, Point b) {
 		return Math.pow(Math.pow(a.latitude - b.coordinates().get(1), 2) + Math.pow(a.longitude - b.coordinates().get(0), 2), 0.5);
+	}
+	
+	
+	// Updates the features and returns an array containing final coin and power values
+	public double[] update(Stateless drone) {
+		ArrayList<Feature> near = nearbyFeatures(drone.location, 0.00025);
+		double coins;
+		double power;
+		for(Feature f: near) {
+			coins = f.getProperty("coins").getAsDouble();
+			power = f.getProperty("power").getAsDouble();
+			if (-coins > drone.coins) {
+				drone.coins = 0;
+				f.removeProperty("coins");
+				f.addNumberProperty("coins", drone.coins + coins);
+			}
+			else {
+				drone.coins = coins + drone.coins;
+				f.removeProperty("coins");
+				f.addNumberProperty("coins", 0);
+			}
+			
+			if (-power > drone.power) {
+				drone.power = 0;
+				f.removeProperty("power");
+				f.addNumberProperty("power", drone.power + coins);
+			}
+			else {
+				drone.power = coins + drone.power;
+				f.removeProperty("power");
+				f.addNumberProperty("power", 0);
+			}
+		}
+		this.path.add(Point.fromLngLat(drone.location.longitude, drone.location.latitude));
+		return new double[]{drone.coins, drone.power};
 	}
 }
