@@ -218,7 +218,7 @@ public class AppTest extends TestCase {
 	}
 	
 	
-	public void testDroneMove() throws Exception{
+	public void testStatelessMove() throws Exception{
 		Map map = new Map("http://homepages.inf.ed.ac.uk/stg/powergrab/2019/09/15/powergrabmap.geojson");
 		Stateless drone = new Stateless(p0, 100);
 		int count = 0;
@@ -226,7 +226,20 @@ public class AppTest extends TestCase {
 			drone.makeMove(map);
 		}
 		map.features.add(Feature.fromGeometry(LineString.fromLngLats(map.path)));
-		System.out.print(FeatureCollection.fromFeatures(map.features).toJson());
+		System.out.println(FeatureCollection.fromFeatures(map.features).toJson());
+		
+	}
+	
+
+	public void testStatefulMove() throws Exception{
+		Map map = new Map("http://homepages.inf.ed.ac.uk/stg/powergrab/2019/09/15/powergrabmap.geojson");
+		Stateful drone = new Stateful(p0, map);
+		int count = 0;
+		while(drone.power > 0 && count <= 250) {
+			drone.makeMove();
+		}
+		map.features.add(Feature.fromGeometry(LineString.fromLngLats(map.path)));
+		System.out.println(FeatureCollection.fromFeatures(map.features).toJson());
 		
 	}
 	

@@ -54,7 +54,64 @@ public class Position {
 			case WNW: return 292.5;
 			case NW: return 315;
 			case NNW: return 337.5;
+			default: return 0; 
 		}
-		return 0;
+	}
+	
+	// Takes an angle in radians and returns a compass direction approximately in the same direction
+	public static Direction getDirection(double angle) {
+		Direction next = Direction.N;	
+		// Convert angle to a number between -16 and 16 for each compass direction
+		angle = angle * 16/Math.PI;
+
+		if(-1 <= angle && angle < 1) {
+			next = Direction.E;
+		}
+		else if(1 <= angle && angle < 3) {
+			next = Direction.ENE;
+		}
+		else if(3 <= angle && angle < 5) {
+			next = Direction.NE;
+		}
+		else if(5 <= angle && angle < 7) {
+			next = Direction.NNE;
+		}
+		else if(7 <= angle && angle < 9) {
+			next = Direction.N;
+		}
+		else if(9 <= angle && angle < 11) {
+			next = Direction.NNW;
+		}
+		else if(11 <= angle && angle < 13) {
+			next = Direction.NW;
+		}
+		else if(13 <= angle && angle < 15) {
+			next = Direction.WNW;
+		}
+		else if(angle >= 15 || angle < -15) {
+			next = Direction.W;
+		}
+		else if(-15 <= angle && angle < -13) {
+			next = Direction.WSW;
+		}
+		else if(-13 <= angle && angle < -11) {
+			next = Direction.SW;
+		}
+		else if(-11 <= angle && angle < -9) {
+			next = Direction.SSW;
+		}
+		else if(-9 <= angle && angle < -7) {
+			next = Direction.S;
+		}
+		else if(-7 <= angle && angle < -5) {
+			next = Direction.SSE;
+		}
+		else if(-5 <= angle && angle < -3) {
+			next = Direction.SE;
+		}
+		else if(-3 <= angle && angle < -1) {
+			next = Direction.ESE;
+		}
+		return next;
 	}
 }
