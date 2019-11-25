@@ -14,6 +14,8 @@ public class Stateful {
 	public ArrayList<Feature> visited;
 	public Feature target;
 	
+	private ArrayList<Feature> bad;
+	
 	public Stateful(Position loc, Map map) {
 		this.location = loc;
 		this.power = 250;
@@ -29,16 +31,16 @@ public class Stateful {
 		this.map.update(this); // Update map to contain starting pos
 		
 		// Remove all bad landings from consideration
-		ArrayList<Feature> bad = new ArrayList<Feature>();
+		this.bad = new ArrayList<Feature>();
+		
 		for(Feature f:this.unvisited) {
 			if(f.getProperty("coins").getAsDouble() < 0) {
-				bad.add(f);
+				this.bad.add(f);
 			}
 		}
 		for(Feature f:bad) {
 			this.unvisited.remove(f);
 		}
-		bad = null; // Clear variable to allow it to be removed by the garbage collector
 	}
 	
 	public void makeMove() {
@@ -65,7 +67,6 @@ public class Stateful {
 		// Here the code is similar to stateless node
 		else {
 			Position newPos;
-			ArrayList<Feature> landings;
 			
 			for (Direction d : Direction.values()) {
 				// Check to see if a move is within the play area
@@ -74,15 +75,20 @@ public class Stateful {
 					continue;
 				}
 				
-				landings = map.nearbyFeatures(newPos, 0.0003);
+				Boolean badDirection = false;
 				
-				// If going towards a bad landing skip this directon
-				if (landings.size() > 0) {
-					if (landings.get(0).getProperty("coins").getAsDouble() < 0) {
-						continue;
+				for(Feature b : this.bad) {
+					if (b.geometry() instanceof Point) {
+						if (Map.distance(newPos, (Point)b.geometry()) < 0.00025) {
+							badDirection = true;
+							break;
+						}
 					}
 				}
 				
+				if (badDirection) {
+					continue;
+				}
 				this.location = this.location.nextPosition(d);
 				break;
 			}
