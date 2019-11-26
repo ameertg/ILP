@@ -27,9 +27,6 @@ public class Node implements Comparable<Node>{
 	
 	public List<Node> getChildren(Map map, double power){
 		ArrayList<Node> children = new ArrayList<Node>();
-		if(this.length == 10){
-			return children;
-		}
 		for (Direction d: Direction.values()) {
 			Position next = this.pos.nextPosition(d);
 			if (next.inPlayArea()) {

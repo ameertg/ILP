@@ -44,15 +44,15 @@ public class Stateful {
 		if (this.goals.size() > 0) {
 			
 			// Get a target if none exists
-			while (this.plan.empty() && this.goals.size() > 2) {
+			if (this.plan.empty() && this.goals.size() > 0) {
 				
 				this.target = Map.nearestFeature(this.location, this.goals);
 				Point targetCoords = ((Point)(target.geometry()));
 				if(Map.distance(this.location, targetCoords) < 0.00025) {
 					this.goals.remove(this.target);
-					continue;
 				}
 				this.plan = findPath(this.location, (Point)this.target.geometry());
+			
 				System.out.println(this.goals.size());
 			}
 			
@@ -117,7 +117,7 @@ public class Stateful {
             explored.add(current); 
 
             // Found goal
-            if (Map.distance(current.pos, b) < 0.00025) {
+            if (Map.distance(current.pos, b) <= 0.00025 || current.length > 10) {
                 return Node.getPath(current);
             }
 
@@ -130,20 +130,20 @@ public class Stateful {
             	ArrayList<Node> prune = new ArrayList<Node>();
             	
             	// Prune nodes at the same location but with greater cost
-            	for(Node n: explored) {
-            		if(n.pos == adj.pos) {
-            			if(n.gcost < adj.gcost) {
-            				ignore = true;
-            			}
-            			else {
-            				prune.add(n);
-            			}
-            		}
-            	}
-            	
-            	for(Node n: prune) {
-            		explored.remove(n);
-            	}
+//            	for(Node n: explored) {
+//            		if(n.pos == adj.pos) {
+//            			if(n.gcost < adj.gcost) {
+//            				ignore = true;
+//            			}
+//            			else {
+//            				prune.add(n);
+//            			}
+//            		}
+//            	}
+//            	
+//            	for(Node n: prune) {
+//            		explored.remove(n);
+//            	}
             	
             	if(!ignore) {
             		cost = Map.distance(adj.pos, b)/0.0003 * 1.25; // Heuristic cost = min power needed to get to goal
