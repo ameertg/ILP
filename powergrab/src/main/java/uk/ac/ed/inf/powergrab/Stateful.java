@@ -21,7 +21,7 @@ public class Stateful {
 	public Stateful(Position loc, Map map) {
 		this.start = loc;
 		this.location = start;
-		this.goals = new ArrayList(map.features);
+		this.goals = new ArrayList<Feature>(map.features);
 		this.map = map;
 		
 		// Remove all negative stations from goals
@@ -56,39 +56,19 @@ public class Stateful {
 				System.out.println(this.goals.size());
 			}
 			
-			if (!this.plan.empty()) {
+			if(!this.plan.empty()) {
 				nextMove = this.plan.pop();
 			}
+			else {
+				dumbMove();
+			}
+			
 			
 		}
 		
 		// Otherwise move randomly while avoiding bad nodes
 		else {
-			Position newPos;	
-			for (Direction d : Direction.values()) {
-				// Check to see if a move is within the play area
-				newPos = location.nextPosition(d);
-				if (!newPos.inPlayArea()) {
-					continue;
-				}
-				
-				Boolean badDirection = false;
-				
-				for(Feature b : this.bad) {
-					if (b.geometry() instanceof Point) {
-						if (Map.distance(newPos, (Point)b.geometry()) < 0.00025) {
-							badDirection = true;
-							break;
-						}
-					}
-				}
-				
-				if (badDirection) {
-					continue;
-				}
-				nextMove = d;
-				break;
-			}
+			nextMove = dumbMove();
 		}
 			
 		// Update location and map values
@@ -126,30 +106,11 @@ public class Stateful {
             double cost;
             for (int i = 0; i < adjacentNodes.size(); i++) {
             	Node adj = adjacentNodes.get(i);
-            	Boolean ignore = false;
-            	ArrayList<Node> prune = new ArrayList<Node>();
-            	
-            	// Prune nodes at the same location but with greater cost
-//            	for(Node n: explored) {
-//            		if(n.pos == adj.pos) {
-//            			if(n.gcost < adj.gcost) {
-//            				ignore = true;
-//            			}
-//            			else {
-//            				prune.add(n);
-//            			}
-//            		}
-//            	}
-//            	
-//            	for(Node n: prune) {
-//            		explored.remove(n);
-//            	}
-            	
-            	if(!ignore) {
-            		cost = Map.distance(adj.pos, b)/0.0003 * 1.25; // Heuristic cost = min power needed to get to goal
-            		adj.sethCost(cost); 
-            		unexplored.add(adj);
-            	}
+
+
+	            cost = Map.distance(adj.pos, b)/0.0003 * 1.25; // Heuristic cost = min power needed to get to goal
+	            adj.sethCost(cost); 
+	            unexplored.add(adj);
             }
             
             // No path exists
@@ -159,5 +120,37 @@ public class Stateful {
         }
         return null; // line unreachable
 		
+	}
+	
+	// Method to make a decision when no information is available. Similar to stateless.
+	private Direction dumbMove() {
+		Direction move = Direction.N;
+		Position newPos;	
+		for (Direction d : Direction.values()) {
+			// Check to see if a move is within the play area
+			newPos = location.nextPosition(d);
+			if (!newPos.inPlayArea()) {
+				continue;
+			}
+			
+			Boolean badDirection = false;
+			
+			for(Feature b : this.bad) {
+				if (b.geometry() instanceof Point) {
+					if (Map.distance(newPos, (Point)b.geometry()) < 0.00025) {
+						badDirection = true;
+						break;
+					}
+				}
+			}
+			
+			if (badDirection) {
+				continue;
+			}
+			move = d;
+			break;
+		}
+		
+		return move;
 	}
 }
