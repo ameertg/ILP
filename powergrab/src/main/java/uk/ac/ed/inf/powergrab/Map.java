@@ -8,6 +8,8 @@ import com.mapbox.geojson.*;
 
 public class Map {
 	List<Feature> features;
+	ArrayList<Feature> unused; // All unvisitied
+	// Path traced by drone
 	LinkedList<Point> path = new LinkedList<Point>();
 	String mapSource;
 	
@@ -43,6 +45,7 @@ public class Map {
         // Extract features from JSON
         this.mapSource = mapSrc.toString();
         this.features = FeatureCollection.fromJson(mapSrc.toString()).features();
+        this.unused = new ArrayList<Feature>(this.features);
     }
 	
 	
@@ -75,7 +78,7 @@ public class Map {
 	public ArrayList<Feature> nearbyFeatures(Position p, double d){
 		ArrayList<Feature> near = new ArrayList<Feature>();
 
-		for(Feature feature : this.features) {
+		for(Feature feature : this.unused) {
 			if (feature.geometry() instanceof Point) {
 				if (distance(p, (Point)feature.geometry()) <= d) {
 					near.add(feature);
@@ -85,73 +88,48 @@ public class Map {
 		return near;
 	}
 	
-	
-	
 	// Updates the features and returns an array containing final coin and power values
-	public double[] update(Stateless drone) {
-		ArrayList<Feature> near = nearbyFeatures(drone.location, 0.00025);
+	public double[] update(Position loc, double dronePower, double droneCoins) {
+		// Find stations in accessible radius
+		ArrayList<Feature> near = nearbyFeatures(loc, 0.00025);
 		double coins;
 		double power;
-		for(Feature f: near) {
+		
+		if (!near.isEmpty()) {
+			// Get nearest station
+			Feature f = nearestFeature(loc, near);
+			// Remove station from future consideration
+			this.unused.remove(f);
+			
+			// Get reservoir from station
 			coins = f.getProperty("coins").getAsDouble();
 			power = f.getProperty("power").getAsDouble();
-			if (-coins > drone.coins) {
-				drone.coins = 0;
+	
+			// Check if value is leaves drone in debt and update drone values accordingly
+			if (-coins > droneCoins) {
+				droneCoins = 0;
 				f.removeProperty("coins");
-				f.addNumberProperty("coins", drone.coins + coins);
+				f.addNumberProperty("coins", droneCoins + coins);
 			}
 			else {
-				drone.coins = coins + drone.coins;
+				droneCoins = coins + droneCoins;
 				f.removeProperty("coins");
 				f.addNumberProperty("coins", 0);
 			}
-			
-			if (-power > drone.power) {
-				drone.power = 0;
+
+			if (-power > dronePower) {
+				dronePower = 0;
 				f.removeProperty("power");
-				f.addNumberProperty("power", drone.power + coins);
+				f.addNumberProperty("power", dronePower + coins);
 			}
 			else {
-				drone.power = coins + drone.power;
+				dronePower = coins + dronePower;
 				f.removeProperty("power");
 				f.addNumberProperty("power", 0);
 			}
 		}
-		this.path.add(Point.fromLngLat(drone.location.longitude, drone.location.latitude));
-		return new double[]{drone.coins, drone.power};
+		// Add step to path
+		this.path.add(Point.fromLngLat(loc.longitude, loc.latitude));
+		return new double[]{droneCoins, dronePower};
 	}
-	
-	// Updates the features and returns an array containing final coin and power values
-		public double[] update(Stateful drone) {
-			ArrayList<Feature> near = nearbyFeatures(drone.location, 0.00025);
-			double coins;
-			double power;
-			for(Feature f: near) {
-				coins = f.getProperty("coins").getAsDouble();
-				power = f.getProperty("power").getAsDouble();
-				if (-coins > drone.coins) {
-					drone.coins = 0;
-					f.removeProperty("coins");
-					f.addNumberProperty("coins", drone.coins + coins);
-				}
-				else {
-					drone.coins = coins + drone.coins;
-					f.removeProperty("coins");
-					f.addNumberProperty("coins", 0);
-				}
-				
-				if (-power > drone.power) {
-					drone.power = 0;
-					f.removeProperty("power");
-					f.addNumberProperty("power", drone.power + coins);
-				}
-				else {
-					drone.power = coins + drone.power;
-					f.removeProperty("power");
-					f.addNumberProperty("power", 0);
-				}
-			}
-			this.path.add(Point.fromLngLat(drone.location.longitude, drone.location.latitude));
-			return new double[]{drone.coins, drone.power};
-		}
 }

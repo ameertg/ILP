@@ -30,7 +30,7 @@ public class Node implements Comparable<Node>{
 		for (Direction d: Direction.values()) {
 			Position next = this.pos.nextPosition(d);
 			if (next.inPlayArea()) {
-				List<Feature> nearby = map.nearbyFeatures(next, 0.00025);
+				ArrayList<Feature> nearby = map.nearbyFeatures(next, 0.00025);
 				double cost = this.gcost + 1.25;
 				for(Feature f: nearby) {
 					cost = cost - f.getProperty("power").getAsDouble();

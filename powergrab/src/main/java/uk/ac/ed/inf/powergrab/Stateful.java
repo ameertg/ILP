@@ -4,7 +4,7 @@ package uk.ac.ed.inf.powergrab;
 import com.mapbox.geojson.*;
 import java.util.*;
 
-public class Stateful {
+public class Stateful extends Drone {
 	public Position start;
 	public Position location;
 	
@@ -15,12 +15,15 @@ public class Stateful {
 	private Stack<Direction> plan = new Stack<Direction>();
 	private Feature target = null;
 	
-	public double power = 250;
-	public double coins = 0;
 	
 	public Stateful(Position loc, Map map) {
+		// Initialize starting state
+		this.coins = 0;
+		this.power = 250;
 		this.start = loc;
+		
 		this.location = start;
+		
 		this.goals = new ArrayList<Feature>(map.features);
 		this.map = map;
 		
@@ -47,13 +50,11 @@ public class Stateful {
 			if (this.plan.empty() && this.goals.size() > 0) {
 				
 				this.target = Map.nearestFeature(this.location, this.goals);
-				Point targetCoords = ((Point)(target.geometry()));
-				if(Map.distance(this.location, targetCoords) < 0.00025) {
+				// Remove target if drained
+				if(this.target.getProperty("coins").getAsDouble() <= 0) {
 					this.goals.remove(this.target);
 				}
 				this.plan = findPath(this.location, (Point)this.target.geometry());
-			
-				System.out.println(this.goals.size());
 			}
 			
 			if(!this.plan.empty()) {
@@ -73,7 +74,9 @@ public class Stateful {
 			
 		// Update location and map values
 		this.location = this.location.nextPosition(nextMove);
-		result = map.update(this);
+		
+		result = this.map.update(this.location, this.power, this.coins);
+
 		// Update coins and power
 		this.coins = result[0];
 		this.power = result[1] - 1.25;
@@ -102,7 +105,7 @@ public class Stateful {
             }
 
             // For all adjacent nodes:
-            List<Node> adjacentNodes = current.getChildren(map, this.power);
+            List<Node> adjacentNodes = current.getChildren(this.map, this.power);
             double cost;
             for (int i = 0; i < adjacentNodes.size(); i++) {
             	Node adj = adjacentNodes.get(i);

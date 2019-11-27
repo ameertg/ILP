@@ -2,22 +2,23 @@ package uk.ac.ed.inf.powergrab;
 import java.util.*;
 import com.mapbox.geojson.*;
 
-public class Stateless{
-	public Position location;
-	public double power;
-	public double coins;
+public class Stateless extends Drone{
 	Random rng;
+	Map map;
 	
 	private final double lookahead = 0.00025;
 	
-	public Stateless(Position loc, long seed) {
+	public Stateless(Position loc, long seed, Map map) {
+		// Initialize start state
 		this.location = loc;
 		this.power = 250;
 		this.coins = 0;
 		rng = new Random(seed);
+		
+		this.map = map;
 	}
 	
-	public void makeMove(Map map) {
+	public void makeMove() {
 		ArrayList<Feature> landings;
 		LinkedList<Direction> notBad = new LinkedList<Direction>(Arrays.asList(Direction.values())); // List of all the good directions
 		
@@ -27,13 +28,13 @@ public class Stateless{
 		
 		//Iterate over every direction to get the best move
 		for (Direction d : Direction.values()) {
-			newPos = location.nextPosition(d);
+			newPos = this.location.nextPosition(d);
 			// Check to see if move d is in play area
 			if (!newPos.inPlayArea()) {
 				notBad.remove(d);
 				continue;
 			}
-			landings = map.nearbyFeatures(newPos, lookahead); // Get list of all landings within range
+			landings = this.map.nearbyFeatures(newPos, lookahead); // Get list of all landings within range
 			
 			float tempSum = 0;
 			// Get sum of coins and power within range
@@ -57,8 +58,8 @@ public class Stateless{
 		}
 		
 		// Update position and map
-		location = location.nextPosition(next);
-		double[] values = map.update(this);	
+		this.location = this.location.nextPosition(next);
+		double[] values = this.map.update(this.location, this.power, this.coins);
 		
 		// Update no. coins and power
 		this.coins = values[0];
