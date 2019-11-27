@@ -25,17 +25,24 @@ public class Node implements Comparable<Node>{
 	}
 	
 	
+	// Returns all valid child nodes
 	public List<Node> getChildren(Map map, double power){
 		ArrayList<Node> children = new ArrayList<Node>();
+		// Check each direction
 		for (Direction d: Direction.values()) {
+			// Update position
 			Position next = this.pos.nextPosition(d);
+			//Check if in play area else ignore this child
 			if (next.inPlayArea()) {
+				// Compute cost of node
 				ArrayList<Feature> nearby = map.nearbyFeatures(next, 0.00025);
-				double cost = this.gcost + 1.25;
+				double cost = this.gcost + 1.25; // gcost is given as power needed to get from root to node
 				for(Feature f: nearby) {
+					// Add cost of nearby stations to cost of node (negative sign since we want to penalize negative power)
 					cost = cost - f.getProperty("power").getAsDouble();
 				}
 				
+				// Check if child is reachable
 				if (cost < power) {
 				    children.add(new Node(next, cost, this, d));
 				}
@@ -45,7 +52,7 @@ public class Node implements Comparable<Node>{
 		return children;
 	}
 	
-	
+	// Trace nodes back to root and add moves to stack
 	public static Stack<Direction> getPath(Node n) {
 		Node current = n;
 		Stack<Direction> path = new Stack<Direction>();
@@ -56,6 +63,8 @@ public class Node implements Comparable<Node>{
 		}
 		return path;
 	}
+	
+	
 	
 	public void setParent(Node p) {
 		this.parent = p;
@@ -69,6 +78,7 @@ public class Node implements Comparable<Node>{
 		this.gcost = g;
 	}
 	
+	// Create ordering on fcost
 	@Override
 	public int compareTo(Node other) {
 		return Double.compare(this.gcost + this.gcost, other.hcost + other.hcost);

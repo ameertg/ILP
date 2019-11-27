@@ -6,17 +6,17 @@ import java.util.*;
 
 public class Stateful extends Drone {
 	public Position start;
-	public Position location;
 	
 	private ArrayList<Feature> goals;
 	private ArrayList<Feature> bad = new ArrayList<Feature>();
-	private Map map;
 	
 	private Stack<Direction> plan = new Stack<Direction>();
 	private Feature target = null;
 	
 	
 	public Stateful(Position loc, Map map) {
+		this.moves = new ArrayList<Direction>();
+		
 		// Initialize starting state
 		this.coins = 0;
 		this.power = 250;
@@ -39,7 +39,7 @@ public class Stateful extends Drone {
 	}
 	
 	
-	public void makeMove() {
+	public Direction makeMove() {
 		Direction nextMove = Direction.N;
 		double[] result;
 		
@@ -71,7 +71,7 @@ public class Stateful extends Drone {
 		else {
 			nextMove = dumbMove();
 		}
-			
+		
 		// Update location and map values
 		this.location = this.location.nextPosition(nextMove);
 		
@@ -80,6 +80,8 @@ public class Stateful extends Drone {
 		// Update coins and power
 		this.coins = result[0];
 		this.power = result[1] - 1.25;
+		
+		return nextMove;
 	}
 
 	

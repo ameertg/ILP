@@ -1,9 +1,5 @@
 package uk.ac.ed.inf.powergrab;
 
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.LineString;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -218,31 +214,13 @@ public class AppTest extends TestCase {
 	}
 	
 	
-	public void testStatelessMove() throws Exception{
-		Map map = new Map("http://homepages.inf.ed.ac.uk/stg/powergrab/2019/09/15/powergrabmap.geojson");
-		Stateless drone = new Stateless(p0, 100, map);
-		int count = 0;
-		while(drone.power > 0 && count <= 250) {
-			drone.makeMove();
-			count++;
+	public void testApp() {
+		String[] args;
+		for(int i = 1; i <= 12; i++) {
+			args = String.format("%02d %02d 2019 55.944425 -3.188396 0 stateful", i, i).split("\\s+");
+			App.main(args);
+			args = String.format("%02d %02d 2019 55.944425 -3.188396 0 stateless", i, i).split("\\s+");
 		}
-		map.features.add(Feature.fromGeometry(LineString.fromLngLats(map.path)));
-		System.out.println(FeatureCollection.fromFeatures(map.features).toJson());
-		
-	}
-	
-
-	public void testStatefulMove() throws Exception{
-		Map map = new Map("http://homepages.inf.ed.ac.uk/stg/powergrab/2019/09/20/powergrabmap.geojson");
-		Stateful drone = new Stateful(p0, map);
-		int count = 0;
-		while(drone.power > 0 && count <= 250) {
-			drone.makeMove();
-			count++;
-		}
-		map.features.add(Feature.fromGeometry(LineString.fromLngLats(map.path)));
-		System.out.println(FeatureCollection.fromFeatures(map.features).toJson());
-		
 	}
 	
 }

@@ -132,4 +132,10 @@ public class Map {
 		this.path.add(Point.fromLngLat(loc.longitude, loc.latitude));
 		return new double[]{droneCoins, dronePower};
 	}
+	
+	public void drawPath() {
+		this.features.add(Feature.fromGeometry(LineString.fromLngLats(this.path)));
+	}
+	
 }
+
