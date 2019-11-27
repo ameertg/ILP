@@ -73,8 +73,10 @@ public class App
 				move = drone.makeMove();
 				after = drone.location;
 				
+				//Write values to file
 				line = String.format("%f %f %s %f %f %f %f\n",
-						before.latitude, before.longitude, move.toString(), after.latitude, after.longitude, drone.coins, drone.power);
+						before.latitude, before.longitude, move.toString(),
+						after.latitude, after.longitude, drone.coins, drone.power);
 				writer.write(line);
 				count++;
 			}
@@ -89,7 +91,7 @@ public class App
 		
 		String result = FeatureCollection.fromFeatures(drone.map.features).toJson();
 		
-		// Print out json and write to file
+		// Print out geojson and write to file
 		System.out.println(result);
 		fileName = String.format("%s-%s-%s-%s.geojson", state, day, month, year);
 		
