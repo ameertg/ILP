@@ -5,8 +5,6 @@ import com.mapbox.geojson.*;
 import java.util.*;
 
 public class Stateful extends Drone {
-	public Position start;
-	
 	private ArrayList<Feature> goals;
 	private ArrayList<Feature> bad = new ArrayList<Feature>();
 	
@@ -14,15 +12,12 @@ public class Stateful extends Drone {
 	private Feature target = null;
 	
 	
-	public Stateful(Position loc, Map map) {
-		this.moves = new ArrayList<Direction>();
-		
+	public Stateful(Position loc, Map map) {		
 		// Initialize starting state
 		this.coins = 0;
 		this.power = 250;
-		this.start = loc;
 		
-		this.location = start;
+		this.location = loc;
 		
 		this.goals = new ArrayList<Feature>(map.features);
 		this.map = map;
@@ -85,7 +80,7 @@ public class Stateful extends Drone {
 	}
 
 	
-	public Stack<Direction> findPath(Position a, Point b) {
+	private Stack<Direction> findPath(Position a, Point b) {
 		PriorityQueue<Node> unexplored; //Priority Queue ordered on F-costs for each node
 		LinkedList<Node> explored;	
 		unexplored = new PriorityQueue<Node>();

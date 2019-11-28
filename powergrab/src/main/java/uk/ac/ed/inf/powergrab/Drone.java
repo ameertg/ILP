@@ -1,13 +1,12 @@
 package uk.ac.ed.inf.powergrab;
 
-import java.util.ArrayList;
 
+// This class defines the general makeup of a drone
 public abstract class Drone {
 	public double coins;
 	public double power;
 	public Map map;
 	
-	public ArrayList<Direction> moves;
 
 	public Position location;
 	

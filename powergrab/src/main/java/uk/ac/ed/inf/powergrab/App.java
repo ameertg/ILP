@@ -60,7 +60,7 @@ public class App
 		}
 		
 		// Make moves until out of power or taken too many steps write to file for each move
-		String fileName = String.format("%s-%s-%s-%s.txt", state, day, month, year);
+		String fileName = String.format("/ilp-results/%s-%s-%s-%s.txt", state, day, month, year);
 		String line;
 		Direction move;
 		Position before;
@@ -93,7 +93,7 @@ public class App
 		
 		// Print out geojson and write to file
 		System.out.println(result);
-		fileName = String.format("%s-%s-%s-%s.geojson", state, day, month, year);
+		fileName = String.format("/ilp-results/%s-%s-%s-%s.geojson", state, day, month, year);
 		
 		try {
 			FileWriter writer = new FileWriter(fileName);

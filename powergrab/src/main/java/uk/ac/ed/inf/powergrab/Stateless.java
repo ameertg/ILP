@@ -18,7 +18,6 @@ public class Stateless extends Drone{
 	}
 	
 	public Direction makeMove() {
-		this.moves = new ArrayList<Direction>();
 		ArrayList<Feature> landings;
 		LinkedList<Direction> notBad = new LinkedList<Direction>(Arrays.asList(Direction.values())); // List of all the good directions
 		
@@ -57,7 +56,6 @@ public class Stateless extends Drone{
 			next = notBad.get(rng.nextInt(notBad.size()));
 		}
 		
-		this.moves.add(next);
 		// Update position and map
 		this.location = this.location.nextPosition(next);
 		double[] values = this.map.update(this.location, this.power, this.coins);
