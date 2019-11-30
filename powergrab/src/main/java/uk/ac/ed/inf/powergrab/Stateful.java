@@ -40,11 +40,10 @@ public class Stateful extends Drone {
 		
 		// If there are unvisited goals left
 		if (this.goals.size() > 0) {
-			
 			// Get a target if none exists
 			if (this.plan.empty() && this.goals.size() > 0) {
-				
 				this.target = Map.nearestFeature(this.location, this.goals);
+				
 				// Remove target if drained
 				if(this.target.getProperty("coins").getAsDouble() <= 0) {
 					this.goals.remove(this.target);
@@ -56,10 +55,9 @@ public class Stateful extends Drone {
 				nextMove = this.plan.pop();
 			}
 			else {
+				// If no plan was found make an uninformed move
 				dumbMove();
 			}
-			
-			
 		}
 		
 		// Otherwise move randomly while avoiding bad nodes
