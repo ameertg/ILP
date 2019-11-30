@@ -99,7 +99,6 @@ public class Map {
 			// Get nearest station
 			Feature f = nearestFeature(loc, near);
 			// Remove station from future consideration
-			this.unused.remove(f);
 			
 			// Get reservoir from station
 			coins = f.getProperty("coins").getAsDouble();
@@ -115,6 +114,7 @@ public class Map {
 				droneCoins = coins + droneCoins;
 				f.removeProperty("coins");
 				f.addNumberProperty("coins", 0);
+				this.unused.remove(f); // Once emptied, remove station from unused
 			}
 
 			if (-power > dronePower) {
@@ -123,7 +123,7 @@ public class Map {
 				f.addNumberProperty("power", dronePower + coins);
 			}
 			else {
-				dronePower = coins + dronePower;
+				dronePower = power + dronePower;
 				f.removeProperty("power");
 				f.addNumberProperty("power", 0);
 			}
