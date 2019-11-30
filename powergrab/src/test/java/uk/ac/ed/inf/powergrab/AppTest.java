@@ -220,6 +220,7 @@ public class AppTest extends TestCase {
 			args = String.format("%02d %02d 2019 55.944425 -3.188396 0 stateful", i, i).split("\\s+");
 			App.main(args);
 			args = String.format("%02d %02d 2019 55.944425 -3.188396 0 stateless", i, i).split("\\s+");
+			App.main(args);
 		}
 	}
 	
