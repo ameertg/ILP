@@ -19,9 +19,9 @@ public class Stateless extends Drone{
 	
 	public Direction makeMove() {
 		ArrayList<Feature> landings;
-		LinkedList<Direction> notBad = new LinkedList<Direction>(Arrays.asList(Direction.values())); // List of all the good directions
+		LinkedList<Direction>  notBad = new LinkedList<Direction>(Arrays.asList(Direction.values())); // List of all the good directions
 		
-		float sum = 0;
+		float max = 0;
 		Direction next = null;
 		Position newPos;
 		
@@ -38,12 +38,12 @@ public class Stateless extends Drone{
 			float tempSum = 0;
 			// Get sum of coins and power within range
 			for (Feature l : landings) {
-				tempSum = l.getProperty("coins").getAsFloat() + l.getProperty("power").getAsFloat();
+				tempSum = tempSum + l.getProperty("coins").getAsFloat() + l.getProperty("power").getAsFloat();
 			}
 			// If sum is positive make this choice
-			if (tempSum > sum) {
+			if (tempSum > max) {
 				next = d;
-				break;
+				max = tempSum;
 			}
 			// If sum is negative remove this choice from the list
 			else if (tempSum < 0) {
