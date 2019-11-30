@@ -45,7 +45,7 @@ public class Node implements Comparable<Node>{
 				
 				// Check if child is reachable
 				if (cost < power) {
-				    children.add(new Node(next, cost, this, d));
+					children.add(new Node(next, cost, this, d));
 				}
 			}
 		}
@@ -73,6 +73,6 @@ public class Node implements Comparable<Node>{
 	// Create ordering on f-cost
 	@Override
 	public int compareTo(Node other) {
-		return Double.compare(this.gcost + this.gcost, other.hcost + other.hcost);
+		return Double.compare(this.gcost + this.hcost, other.gcost + other.hcost);
 	}
 }

@@ -27,36 +27,50 @@ public class Stateful extends Drone {
 			if(f.getProperty("coins").getAsDouble() < 0) {this.bad.add(f);}
 		}
 		for(Feature f:this.bad) {this.goals.remove(f);}
+		
+		this.target = Map.nearestFeature(this.location, this.goals);
 	}
 	
 	
 	public Direction makeMove() {
-		Direction nextMove = Direction.N;
-		double[] result;
-		
-		// If there are unvisited goals left
-		if (this.goals.size() > 0) {
-			// Get a target if none exists
-			if (this.plan.empty() && this.goals.size() > 0) {
-				this.target = Map.nearestFeature(this.location, this.goals);
-				
-				// Remove target if drained
-				if(this.target.getProperty("coins").getAsDouble() <= 0) {
-					this.goals.remove(this.target);
-				}
-				this.plan = findPath(this.location, (Point)this.target.geometry());
+		Direction nextMove;
+		if (this.target != null && this.target.getProperty("coins").getAsDouble() == 0 ) {
+			// Clear plan
+			this.plan = new Stack<Direction>();
+			this.goals.remove(this.target);
+			
+			// If all goals reached make dumb move
+			if (this.goals.isEmpty()) {
+				this.target = null;
 			}
 			
-			if(!this.plan.empty()) {
+			// Otherwise update target and create new plan
+			else {
+				this.target = Map.nearestFeature(this.location, this.goals);
+				this.plan = findPath(this.location, (Point)this.target.geometry());
+			}
+		}
+			
+		// If plan exists make a move
+		if (!this.plan.empty()) {
+			nextMove = this.plan.pop();
+		}
+		
+		// If there are unvisited goals left
+		else if (this.goals.size() > 0) {			
+			
+			// Create and execute new plan
+			this.plan = findPath(this.location, (Point)this.target.geometry());
+
+			// If target is unreachable
+			if (!this.plan.isEmpty()) {
 				nextMove = this.plan.pop();
 			}
 			else {
-				// If no plan was found make an uninformed move
-				dumbMove();
+				nextMove = dumbMove();
 			}
 		}
 		
-		// Otherwise move randomly while avoiding bad nodes
 		else {
 			nextMove = dumbMove();
 		}
@@ -64,7 +78,7 @@ public class Stateful extends Drone {
 		// Update location and map values
 		this.location = this.location.nextPosition(nextMove);
 		
-		result = this.map.update(this.location, this.power, this.coins);
+		double[] result = this.map.update(this.location, this.power, this.coins);
 
 		// Update coins and power
 		this.coins = result[0];
@@ -90,8 +104,8 @@ public class Stateful extends Drone {
             // Add current node to explored list
             explored.add(current); 
 
-            // Found goal
-            if (Map.distance(current.pos, b) <= 0.00025 || current.length > 10) {
+            // Found goal or plan is too long
+            if (Map.distance(current.pos, b) <= 0.00025 || current.length == 10) {
                 return Node.getPath(current);
             }
 
@@ -100,7 +114,6 @@ public class Stateful extends Drone {
             double cost;
             for (int i = 0; i < adjacentNodes.size(); i++) {
             	Node adj = adjacentNodes.get(i);
-
 
 	            cost = Map.distance(adj.pos, b)/0.0003 * 1.25; // Heuristic cost = min power needed to get to goal
 	            adj.sethCost(cost); 
@@ -129,6 +142,7 @@ public class Stateful extends Drone {
 			
 			Boolean badDirection = false;
 			
+			// Check if any bad stations are within reach
 			for(Feature b : this.bad) {
 				if (b.geometry() instanceof Point) {
 					if (Map.distance(newPos, (Point)b.geometry()) < 0.00025) {
@@ -138,9 +152,12 @@ public class Stateful extends Drone {
 				}
 			}
 			
+			// If so ignore this direction
 			if (badDirection) {
 				continue;
 			}
+			
+			// Pick this direction as soon as a valid move is found
 			move = d;
 			break;
 		}

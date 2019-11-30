@@ -89,8 +89,7 @@ public class App
 		String result = FeatureCollection.fromFeatures(drone.map.features).toJson();
 		
 		
-		// Print out geojson and write to file
-		System.out.println(result);
+		// Write geojson to file
 		fileName = String.format("ilp-results/%s-%s-%s-%s.geojson", state, day, month, year);
 		try {
 			FileWriter writer = new FileWriter(fileName);
