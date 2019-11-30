@@ -4,11 +4,11 @@ import com.mapbox.geojson.*;
 
 public class Node implements Comparable<Node>{
 	Position pos;
-	int length;
+	int length; // Number of steps until current node
 	Node parent = null;
-	Direction d = null;
-	double gcost;
-	double hcost;
+	Direction d = null; // Direction moved from parent to current node
+	double gcost; // Cost to node
+	double hcost; // Cost to goal
 	
 	public Node(Position e, double g) {
 		this.length = 0;
@@ -16,7 +16,8 @@ public class Node implements Comparable<Node>{
 		this.gcost = g;
 	}
 	
-	public Node(Position e, double g, Node parent, Direction d) {
+	// Constructor used only by getChildren
+	private Node(Position e, double g, Node parent, Direction d) {
 		this.pos = e;
 		this.gcost = g;
 		this.parent = parent;
@@ -64,21 +65,12 @@ public class Node implements Comparable<Node>{
 		return path;
 	}
 	
-	
-	
-	public void setParent(Node p) {
-		this.parent = p;
-	}
-	
 	public void sethCost(double h) {
 		this.hcost = h;
 	}
 	
-	public void setgCost(double g) {
-		this.gcost = g;
-	}
 	
-	// Create ordering on fcost
+	// Create ordering on f-cost
 	@Override
 	public int compareTo(Node other) {
 		return Double.compare(this.gcost + this.gcost, other.hcost + other.hcost);

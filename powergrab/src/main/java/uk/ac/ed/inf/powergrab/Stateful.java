@@ -24,13 +24,9 @@ public class Stateful extends Drone {
 		
 		// Remove all negative stations from goals
 		for(Feature f:this.goals) {
-			if(f.getProperty("coins").getAsDouble() < 0) {
-				this.bad.add(f);
-			}
+			if(f.getProperty("coins").getAsDouble() < 0) {this.bad.add(f);}
 		}
-		for(Feature f:this.bad) {
-			this.goals.remove(f);
-		}
+		for(Feature f:this.bad) {this.goals.remove(f);}
 	}
 	
 	

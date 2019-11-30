@@ -18,9 +18,7 @@ public class App
     	
     	// Parse command-line args
     	try {
-    		if(args.length != 7) {
-    			throw new Exception();
-    		}
+    		if(args.length != 7) {throw new Exception();}
     		
     		day = args[0];
     		month = args[1];
@@ -30,34 +28,32 @@ public class App
     		seed = Integer.parseInt(args[5]);
     		state = args[6];
     		
-    		if (!(state.equals("stateless") || state.equals("stateful"))) {
-    			throw new Exception();
-    		}
+    		if (!(state.equals("stateless") || state.equals("stateful"))) {throw new Exception();}
     	}
     	catch(Exception e) {
     		System.out.println("Incorrect argument format. Use: DD MM YYYY lat long seed stateless/stateful");
     		return;
     	}
     	
+    	
     	Position start = new Position(Double.parseDouble(latitude), Double.parseDouble(longitude));
     	
     	// Load map
     	String mapAddress = String.format("http://homepages.inf.ed.ac.uk/stg/powergrab/%s/%s/%s/powergrabmap.geojson", year, month, day);
-    	try {
-    		map = new Map(mapAddress);
-    	}
+    	try {map = new Map(mapAddress);}
     	catch(Exception e) {
     		System.out.println("Map at address " + mapAddress + " is unreachable.");
     		return;
     	}
     	
-    	// Get state and create drone
+    	// Create the drone
 		if(state.equals("stateless")) {
 			drone = new Stateless(start, seed, map);
 		}
 		else {
 			drone = new Stateful(start, map);
 		}
+		
 		
 		// Make moves until out of power or taken too many steps write to file for each move
 		String fileName = String.format("ilp-results/%s-%s-%s-%s.txt", state, day, month, year);
@@ -86,15 +82,16 @@ public class App
 			System.out.println("Unable to write to file " + fileName);
 		}
 		
+		
+		
 		// Draw path trace onto map
 		drone.map.drawPath();
-		
 		String result = FeatureCollection.fromFeatures(drone.map.features).toJson();
+		
 		
 		// Print out geojson and write to file
 		System.out.println(result);
 		fileName = String.format("ilp-results/%s-%s-%s-%s.geojson", state, day, month, year);
-		
 		try {
 			FileWriter writer = new FileWriter(fileName);
 			writer.write(result);
