@@ -52,7 +52,7 @@ public class Stateless extends Drone{
 		}
 		
 		// If no positive directions are found take a random non-negative direction
-		if (next == null && notBad.size() > 0) {
+		if (next == null) {
 			next = notBad.get(rng.nextInt(notBad.size()));
 		}
 		
