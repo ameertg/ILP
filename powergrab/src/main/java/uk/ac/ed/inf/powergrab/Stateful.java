@@ -94,7 +94,10 @@ public class Stateful extends Drone {
 		unexplored = new PriorityQueue<Node>();
         explored = new LinkedList<Node>();
         // Add starting point to unexplored
-        unexplored.add(new Node(a, 0)); 
+        Node root = new Node(a);
+        root.sethCost(Map.distance(root.pos, b)/0.0003 * 1.25);
+        
+        unexplored.add(root); 
 
         Boolean done = false;
         Node current;

@@ -10,10 +10,11 @@ public class Node implements Comparable<Node>{
 	double gcost; // Cost to node
 	double hcost; // Cost to goal
 	
-	public Node(Position e, double g) {
+	// Create root node
+	public Node(Position e) {
 		this.length = 0;
 		this.pos = e;
-		this.gcost = g;
+		this.gcost = 0;
 	}
 	
 	// Constructor used only by getChildren
