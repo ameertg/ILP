@@ -6,4 +6,4 @@ The project required us to create two drones. One which used random movements to
 
 ## Implementation
 
-The random drone is fairly simple moving in any direction that isn't detrimental to its score while preferring directions that give a positive score. The second drone selects the nearest positive valued station and uses A* to find the optimal path to its target.
+The random drone is fairly simple moving in any direction that isn't detrimental to its score while preferring directions that give a positive score. The second drone selects the nearest positive valued station and uses A* search to find the optimal path to its target.
